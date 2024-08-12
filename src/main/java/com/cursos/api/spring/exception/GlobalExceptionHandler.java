@@ -20,6 +20,22 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler( ObjectNotFoundException.class )
+    public ResponseEntity< ApiError > handleObjectNotFoundException( ObjectNotFoundException exception, HttpServletRequest request ) {
+
+        ApiError apiError = ApiError
+                .builder()
+                .backendMessage( exception.getLocalizedMessage() )
+                .url( request.getRequestURL().toString() )
+                .method( request.getMethod() )
+                .message( "Recurso no encontrado: " + exception.getMessage() )
+                .timestamp( LocalDateTime.now() )
+                .build();
+
+        return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( apiError );
+
+    }
+
     @ExceptionHandler( MethodArgumentNotValidException.class )
     public ResponseEntity< ApiError > handleMethodArgumentNotValidException( MethodArgumentNotValidException exception, HttpServletRequest request ) {
 
@@ -58,22 +74,6 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler( InvalidPasswordException.class )
-    public ResponseEntity< ApiError > handleInvalidPasswordException( InvalidPasswordException exception, HttpServletRequest request ) {
-
-        ApiError apiError = ApiError
-                .builder()
-                .backendMessage( exception.getLocalizedMessage() )
-                .url( request.getRequestURL().toString() )
-                .method( request.getMethod() )
-                .message( "Contraseñas no coinciden: " + exception.getMessage() )
-                .timestamp( LocalDateTime.now() )
-                .build();
-
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( apiError );
-
-    }
-
     @ExceptionHandler( BadCredentialsException.class )
     public ResponseEntity< ApiError > handleBadCredentialsException( BadCredentialsException exception, HttpServletRequest request ) {
 
@@ -87,6 +87,22 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( apiError );
+
+    }
+
+    @ExceptionHandler( InvalidPasswordException.class )
+    public ResponseEntity< ApiError > handleInvalidPasswordException( InvalidPasswordException exception, HttpServletRequest request ) {
+
+        ApiError apiError = ApiError
+                .builder()
+                .backendMessage( exception.getLocalizedMessage() )
+                .url( request.getRequestURL().toString() )
+                .method( request.getMethod() )
+                .message( "Contraseñas no coinciden: " + exception.getMessage() )
+                .timestamp( LocalDateTime.now() )
+                .build();
+
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( apiError );
 
     }
 
@@ -116,7 +132,7 @@ public class GlobalExceptionHandler {
                 .backendMessage( exception.getLocalizedMessage() )
                 .url( request.getRequestURL().toString() )
                 .method( request.getMethod() )
-                .message( "Error interno en el servidor: " + exception.getMessage() )
+                .message( "Error interno del sistema: " + exception.getMessage() )
                 .timestamp( LocalDateTime.now() )
                 .build();
 

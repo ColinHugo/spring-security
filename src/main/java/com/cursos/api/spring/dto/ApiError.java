@@ -1,5 +1,6 @@
 package com.cursos.api.spring.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,8 @@ public class ApiError {
     private String message;
     private String url;
     private String method;
+
+    @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss" )
     private LocalDateTime timestamp;
 
 }
