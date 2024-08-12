@@ -4,7 +4,7 @@ import com.cursos.api.spring.dto.RegisteredUser;
 import com.cursos.api.spring.dto.SaveUser;
 import com.cursos.api.spring.dto.auth.AuthenticationRequest;
 import com.cursos.api.spring.dto.auth.AuthenticationResponse;
-import com.cursos.api.spring.persistence.entity.User;
+import com.cursos.api.spring.persistence.entity.security.User;
 import com.cursos.api.spring.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +34,7 @@ public class AuthenticationService {
                 .id( user.getId() )
                 .name( user.getName() )
                 .username( user.getUsername() )
-                .role( user.getRole().name() )
+                .role( user.getRole().getName() )
                 .build();
 
         String jwt = jwtService.generateToken( user, generateExtraClaims( user ) );
@@ -48,7 +48,7 @@ public class AuthenticationService {
 
         Map< String, Object > extraClaims = new HashMap<>();
         extraClaims.put( "name", user.getName() );
-        extraClaims.put( "role", user.getRole().name() );
+        extraClaims.put( "role", user.getRole().getName() );
         extraClaims.put( "authorities", user.getAuthorities() );
 
         return extraClaims;

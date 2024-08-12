@@ -1,6 +1,6 @@
 package com.cursos.api.spring.config.security.filter;
 
-import com.cursos.api.spring.persistence.entity.User;
+import com.cursos.api.spring.persistence.entity.security.User;
 import com.cursos.api.spring.service.UserService;
 import com.cursos.api.spring.service.auth.JwtService;
 import jakarta.servlet.FilterChain;

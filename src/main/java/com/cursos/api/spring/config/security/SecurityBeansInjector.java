@@ -1,8 +1,7 @@
 package com.cursos.api.spring.config.security;
 
 import com.cursos.api.spring.exception.ObjectNotFoundException;
-import com.cursos.api.spring.persistence.entity.User;
-import com.cursos.api.spring.persistence.repository.UserRepository;
+import com.cursos.api.spring.persistence.repository.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

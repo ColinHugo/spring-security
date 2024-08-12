@@ -69,7 +69,6 @@ public class GlobalExceptionHandler {
                 .toList()
         );
 
-
         return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( apiError );
 
     }

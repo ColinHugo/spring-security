@@ -1,7 +1,7 @@
 package com.cursos.api.spring.service;
 
 import com.cursos.api.spring.dto.SaveUser;
-import com.cursos.api.spring.persistence.entity.User;
+import com.cursos.api.spring.persistence.entity.security.User;
 
 public interface UserService {
 
