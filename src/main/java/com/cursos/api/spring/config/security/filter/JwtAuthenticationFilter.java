@@ -17,6 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -28,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain ) throws ServletException, IOException {
 
         // 1.- Obtener encabezado http llamado Authorization
-        String authorizationHeader = request.getHeader( "Authorization" );
+        String authorizationHeader = request.getHeader( AUTHORIZATION );
 
         if ( !StringUtils.hasText( authorizationHeader ) || !authorizationHeader.startsWith( "Bearer ") ) {
             filterChain.doFilter( request, response );
