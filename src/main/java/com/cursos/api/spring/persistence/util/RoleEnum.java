@@ -1,13 +1,11 @@
 package com.cursos.api.spring.persistence.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
 public enum RoleEnum {
 
     ADMINISTRATOR( Arrays.asList(
@@ -30,20 +28,25 @@ public enum RoleEnum {
             RolePermissionEnum.READ_ONE_PRODUCT,
             RolePermissionEnum.UPDATE_ONE_PRODUCT,
 
-
             RolePermissionEnum.READ_ALL_CATEGORIES,
             RolePermissionEnum.READ_ONE_CATEGORY,
             RolePermissionEnum.UPDATE_ONE_CATEGORY,
 
             RolePermissionEnum.READ_MY_PROFILE
     ) ),
-    CUSTOMER( Arrays.asList(
-            RolePermissionEnum.READ_MY_PROFILE
-    ) );
+    CUSTOMER( List.of( RolePermissionEnum.READ_MY_PROFILE ) );
 
-    private List<RolePermissionEnum> permissions;
+    private List< RolePermissionEnum > permissions;
 
-    public void setPermissions( List<RolePermissionEnum> permissions ) {
+    RoleEnum( List< RolePermissionEnum > permissions ) {
+        this.permissions = permissions;
+    }
+
+    public List< RolePermissionEnum > getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions( List< RolePermissionEnum > permissions ) {
         this.permissions = permissions;
     }
 

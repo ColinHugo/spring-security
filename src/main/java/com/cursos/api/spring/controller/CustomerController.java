@@ -17,7 +17,7 @@ public class CustomerController {
 
     private final AuthenticationService authenticationService;
 
-    @PreAuthorize( "hasRole( 'ADMINISTRATOR' )" )
+    // @PreAuthorize( "hasRole( 'ADMINISTRATOR' )" )
     @PostMapping
     public ResponseEntity< RegisteredUser > registerOne( @Valid @RequestBody SaveUser newUser ) {
 

@@ -1,8 +1,14 @@
 package com.cursos.api.spring.config.security.authorization;
 
 import com.cursos.api.spring.persistence.entity.security.Operation;
+import com.cursos.api.spring.persistence.entity.security.User;
+import com.cursos.api.spring.persistence.repository.security.OperationRepository;
+import com.cursos.api.spring.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
@@ -10,15 +16,19 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class CustomAuthorizationManager implements AuthorizationManager< RequestAuthorizationContext > {
 
     private final OperationRepository operationRepository;
+    private final UserService userService;
 
     @Override
     public AuthorizationDecision check( Supplier<Authentication> authentication, RequestAuthorizationContext requestContext ) {
@@ -27,29 +37,77 @@ public class CustomAuthorizationManager implements AuthorizationManager< Request
 
         String url = extractUrl( request );
         String httpMethod = request.getMethod();
+
         boolean isPublic = isPublic( url, httpMethod );
 
-        return new AuthorizationDecision( isPublic );
+        if ( isPublic ) {
+            return new AuthorizationDecision( true );
+        }
+
+        boolean isGranted = isGranted( url, httpMethod, authentication.get() );
+
+        return new AuthorizationDecision( isGranted );
+
+    }
+
+    private boolean isGranted( String url, String httpMethod, Authentication authentication ) {
+
+        if ( authentication == null || !( authentication instanceof UsernamePasswordAuthenticationToken ) ) {
+            throw new AuthenticationCredentialsNotFoundException( "User not logged in" );
+        }
+
+        List< Operation > operations = obtainOperations( authentication );
+
+        boolean isGranted = operations
+                .stream()
+                .anyMatch( getOperationPredicate( url, httpMethod ) );
+
+        log.info( "IS GRANTED: " + isGranted );
+
+        return isGranted;
+
+
+    }
+
+    private static Predicate< Operation > getOperationPredicate( String url, String httpMethod ) {
+
+        return operation -> {
+
+            String basePath = operation.getModule().getBasePath();
+            Pattern pattern = Pattern.compile(basePath.concat(operation.getPath()));
+            Matcher matcher = pattern.matcher( url );
+
+            return matcher.matches() && operation.getHttpMethod().equals( httpMethod );
+
+        };
+
+    }
+
+    private List< Operation > obtainOperations( Authentication authentication ) {
+
+        UsernamePasswordAuthenticationToken authToken = ( UsernamePasswordAuthenticationToken ) authentication;
+
+        String username = ( String ) authToken.getPrincipal();
+        User user = userService.findOneByUsername( username );
+
+        return user
+                .getRole()
+                .getPermissions()
+                .stream()
+                .map( grantedPermission -> grantedPermission.getOperation() )
+                .collect( Collectors.toList() );
 
     }
 
     private boolean isPublic( String url, String httpMethod ) {
 
-        List< Operation > publicAccessEndpoints = operacionRepopsitory.findByPublicAccess();
+        List< Operation > publicAccessEndpoints = operationRepository.findByPublicAccess();
 
         boolean isPublic = publicAccessEndpoints
                 .stream()
-                .anyMatch( operation -> {
+                .anyMatch( getOperationPredicate( url, httpMethod ) );
 
-                    String basePath = operation.getModule().getBasePath();
-                    Pattern pattern = Pattern.compile( basePath.concat( operation.getPath() ) );
-                    Matcher matcher = pattern.matcher( url );
-
-                    return matcher.matches();
-
-                } );
-
-        System.out.println( "IS PUBLIC: " + isPublic );
+        log.info( "IS PUBLIC: " + isPublic );
 
         return isPublic;
 
@@ -60,9 +118,11 @@ public class CustomAuthorizationManager implements AuthorizationManager< Request
         String contextPath = request.getContextPath();
         String url = request.getRequestURI();
         url = url.replace( contextPath, "" );
-        System.out.println("url = " + url);
 
-        return null;
+        log.info( "URL: " + url );
+
+        return url;
+
     }
 
 }

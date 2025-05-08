@@ -27,17 +27,23 @@ public class SecurityBeansInjector {
     @Bean
     public AuthenticationProvider authenticationProvider() {
 
-        DaoAuthenticationProvider authenticationStrategy = new DaoAuthenticationProvider();
-        authenticationStrategy.setPasswordEncoder( passwordEncoder() );
-        authenticationStrategy.setUserDetailsService( userDetailsService() );
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setPasswordEncoder( passwordEncoder() );
+        authenticationProvider.setUserDetailsService( userDetailsService() );
 
-        return authenticationStrategy;
+        return authenticationProvider;
 
     }
+
+    /* @Bean
+    public CompromisedPasswordChecker compromisedPasswordChecker() {
+        return new HaveIBeenPwnedRestApiPasswordChecker();
+    } */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+        // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean

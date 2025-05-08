@@ -53,11 +53,8 @@ public class UserServiceImpl implements UserService {
 
     private void validatePassword( SaveUser dto ) {
 
-        if ( !StringUtils.hasText( dto.getPassword() ) || !StringUtils.hasText( dto.getRepeatedPassword() ) ) {
-            throw new InvalidPasswordException( "Passwords don't match" );
-        }
-
-        if( !dto.getPassword().equals( dto.getRepeatedPassword() ) ) {
+        if ( !StringUtils.hasText( dto.getPassword() ) || !StringUtils.hasText( dto.getRepeatedPassword() )
+                || !dto.getPassword().equals( dto.getRepeatedPassword() ) ) {
             throw new InvalidPasswordException( "Passwords don't match" );
         }
 

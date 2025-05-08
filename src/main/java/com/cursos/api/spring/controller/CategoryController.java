@@ -1,9 +1,7 @@
 package com.cursos.api.spring.controller;
 
 import com.cursos.api.spring.dto.SaveCategory;
-import com.cursos.api.spring.dto.SaveProduct;
 import com.cursos.api.spring.persistence.entity.Category;
-import com.cursos.api.spring.persistence.entity.Product;
 import com.cursos.api.spring.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

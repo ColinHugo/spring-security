@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -85,6 +86,8 @@ public class GlobalExceptionHandler {
                 .timestamp( LocalDateTime.now() )
                 .build();
 
+        log.error( "Usuario o contraseña incorrectas: " + exception.getMessage() );
+
         return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( apiError );
 
     }
@@ -120,6 +123,25 @@ public class GlobalExceptionHandler {
         log.error( "Descripción del error: " + apiException );
 
         return new ResponseEntity<>( apiException, HttpStatus.BAD_REQUEST );
+
+    }
+
+    // Esta excepcion se lanza con method security
+    @ExceptionHandler( AccessDeniedException.class )
+    public ResponseEntity< ApiError > handleAccessDeniedException( AccessDeniedException exception, HttpServletRequest request ) {
+
+        ApiError apiError = ApiError
+                .builder()
+                .backendMessage( exception.getLocalizedMessage() )
+                .url( request.getRequestURL().toString() )
+                .method( request.getMethod() )
+                .message( "Acceso denegado, no tienes permisos necesario: " + exception.getMessage() )
+                .timestamp( LocalDateTime.now() )
+                .build();
+
+        log.error( "Descripción del error: " + apiError );
+
+        return ResponseEntity.status( HttpStatus.FORBIDDEN ).body( apiError );
 
     }
 

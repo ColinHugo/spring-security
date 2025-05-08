@@ -43,7 +43,7 @@ public class User implements UserDetails {
         List< SimpleGrantedAuthority > authorities = role
                 .getPermissions()
                 .stream()
-                .map( each -> each.getOperation().getName() )
+                .map( a -> a.getOperation().getName() )
                 .map( SimpleGrantedAuthority::new )
                 .collect( Collectors.toList() );
 
@@ -54,33 +54,23 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return UserDetails.super.isEnabled();
     }
 
 }
